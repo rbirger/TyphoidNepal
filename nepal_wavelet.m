@@ -46,7 +46,7 @@ dof = n - scale;  % the -scale corrects for padding at edges
 global_signif = wave_signif(std(tsdata)^2,dt,scale,1,lag1,-1,dof,mother);
 
 %create time vector
-time = [1:tmax];
+time = dt*[1:tmax]';
 
 figure
 %--- Plot time series
@@ -100,7 +100,7 @@ ylabel('Dominant period')
 phase=angle(wave);
 
 figure
-plot(time,phase(9,:)*180/pi)
-xlim([time(1,:) time(end,:)])
+plot(time(1:n),phase(9,:)*180/pi)
+xlim([time(1,:) time(n,:)])
 xlabel('Time (years)')
 ylabel('Phase angle (degrees)')
