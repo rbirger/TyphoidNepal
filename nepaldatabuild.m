@@ -97,10 +97,12 @@ figure;
 subplot(1,2,1); hold on;
 plot(datenum(date_rainwk),resid_rainfall,'b')
 plot(datenum(date_nepal),resid_typhi,'r')
+legend('Rainfall Residuals','Typhi Residuals')
 datetick('x','mmm-yy')
 xlim([datenum(date_nepal(1,:))-7 datenum(date_nepal(end,:))+7])
 subplot(1,2,2)
 scatter(resid_rainfall,resid_typhi(1:716))
+title('Rainfall vs Typhi Residuals')
 
 %%
 corr_resid=zeros(9,1);
@@ -134,7 +136,7 @@ typhi_wkyr(1:26,14)=typhi_nepal(yri(end):yri(end)+25,1);
 %%
 rainday=(datenum([1997 1 1 0 0 0]):datenum([2010 12 28 0 0 0]))';
 date_rain=[1996 12 29 0 0 0];
-while date_rainwk(end,1)<2011
+while date_rain(end,1)<2011
     date_rain=[date_rain; datevec(datenum(date_rain(end,:))+7)];
 end
 
