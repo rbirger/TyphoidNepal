@@ -1,5 +1,5 @@
 %% Data on the serovar (typhi vs paratyphi) is missing for June 2001-May 2002, so let's impute it based on the proportion typhi vs paratyphi using the rest of the data
-
+dbstop if error
 typhi_nepal=C_nepal(:,3);
 paratyphi_nepal=C_nepal(:,2);
 
@@ -10,6 +10,10 @@ for i=217:263
     typhi_nepal(i,1)=poissrnd(nepal_ptyphi*C_nepal(i,1));
     paratyphi_nepal(i,1)=C_nepal(i,1)-typhi_nepal(i,1);
 end
+
+% First, log-transform the data and scale it to have a mean=0 and variance=1 
+logtyphi=log(typhi_nepal+1); 
+lograinfall=log(rainfall_nepalwk+1);
 
 %% Calculate correlation between rainfall and typhi/paratyphi cases and different lags (0-8 weeks)
 
@@ -140,6 +144,7 @@ while date_rain(end,1)<2011
     date_rain=[date_rain; datevec(datenum(date_rain(end,:))+7)];
 end
 
+%figure out what's going on with rain dates here
 rainfall_nepal=zeros(length(date_rain)-1,1);
 j=1;
 for i=1:length(rainday)
