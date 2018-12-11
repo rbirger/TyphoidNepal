@@ -137,26 +137,27 @@ end
 typhi_wkyr(15:52,1)=typhi_nepal(1:38,1);
 typhi_wkyr(1:26,14)=typhi_nepal(yri(end):yri(end)+25,1);
 
-%%
-rainday=(datenum([1997 1 1 0 0 0]):datenum([2010 12 28 0 0 0]))';
-date_rain=[1996 12 29 0 0 0];
-while date_rain(end,1)<2011
-    date_rain=[date_rain; datevec(datenum(date_rain(end,:))+7)];
-end
-
-%figure out what's going on with rain dates here
-rainfall_nepal=zeros(length(date_rain)-1,1);
-j=1;
-for i=1:length(rainday)
-    if rainday(i)<datenum(date_rain(j+1,:))
-        rainfall_nepal(j,1)=rainfall_nepal(j,1)+rainfall_nepalday(i,1);
-    else
-        j=j+1;
-        rainfall_nepal(j,1)=rainfall_nepalday(i,1);
-    end
-end
-
-date_rain(end,:)=[];
+%% -- check, maybe this is not necessary?
+% rainday=(datenum([1997 1 1 0 0 0]):datenum([2010 12 28 0 0 0]))';
+% date_rain=[1996 12 29 0 0 0];
+% while date_rain(end,1)<2011
+%     date_rain=[date_rain; datevec(datenum(date_rain(end,:))+7)];
+% end
+% 
+% %figure out what's going on with rain dates here
+% %get weekly rain totals
+% rainfall_nepal=zeros(length(date_rain)-1,1);
+% j=1;
+% for i=1:length(rainday)
+%     if rainday(i)<datenum(date_rain(j+1,:))
+%         rainfall_nepal(j,1)=rainfall_nepal(j,1)+rainfall_nepalday(i,1);
+%     else
+%         j=j+1;
+%         rainfall_nepal(j,1)=rainfall_nepalday(i,1);
+%     end
+% end
+% 
+% date_rain(end,:)=[];
 %%
 rainpar_nepal=fminsearch(@(p) seasfit(p,rainbywk_nepal,52),[50 40 .6])
 

@@ -107,7 +107,8 @@ ylabel('Paratyphoid cases (per week)')
 
 %%
 figure
-[ax,y1,y2]=plotyy(1:52,mean(typhi_nepal_bywk,2),1:52,rainbywk_nepal);
+%[ax,y1,y2]=plotyy(1:52,mean(typhi_nepal_bywk,2),1:52,rainbywk_nepal);
+[ax,y1,y2]=plotyy(1:52,mean(typhi_wkyr,2),1:52,rainbywk_nepal);
 set(y1,'Color','r')
 set(y2,'Color','b')
 set(ax(1),'YColor','k','XLim',[0 53],'XTick',0:13:52)

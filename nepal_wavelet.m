@@ -93,10 +93,10 @@ ylabel('Dominant period')
 
 %%
 % 7. Calculate the phase angle for each scale and point in the time series,
-% then plot the phase angle (in degrees) corresponding to the 2-year 
-% (biennial) period, as in Fig. 2d of Grenfell et al (2001).
+% then plot the phase angle (in degrees) corresponding to the 1-year 
+% period, as in Fig. 2d of Grenfell et al (2001).
 
-% Conveniently, MATLAB has a built in function that does this for you...
+
 phase=angle(wave);
 
 figure
