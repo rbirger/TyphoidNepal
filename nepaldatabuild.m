@@ -58,6 +58,7 @@ datetick('x','mmm-yy')
 xlim([datenum(date_nepal(1,:))-7 datenum(date_nepal(end,:))+7])
 set(gca,'YLim',[0 80],'YTick',0:20:80)
 ylabel({'No. of Typhi cases';'(per week)'})
+legend('Typhoid Cases','Model Fit 4 (12, 1 year periods)','Model Fit 7 (12,3,1, .5 yr periods)')
 
 %%
 resid_typhi=typhi_nepal-Y_typhi4;

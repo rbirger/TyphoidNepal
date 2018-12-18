@@ -99,7 +99,7 @@ set(ax(1),'YColor','k','XLim',[datenum(date_nepal(1,:))-7 datenum(date_nepal(end
 set(ax(2),'YColor','k','XLim',[datenum(date_nepal(1,:))-7 datenum(date_nepal(end,:))+7],'XTick',[],'YTick',0:100:500)
 ylabel('Typhoid cases (per week)')
 set(get(ax(2),'YLabel'),'String','Rainfall (mm/wk)')
-legend('Typhoid cases','Rainfall')
+legend('ARIMA Residuals','Rainfall')
 
 corr_rainarimaresid=zeros(9,1);
 for i=0:8
@@ -139,8 +139,8 @@ subplot(3,1,3)
 parcorr(resid_rainarima,52*6,0,4)
 title('Residuals PACF')
 
-%% 6. Fit the ARIMA model to the first 16 years of measles notifications, then 
-% use the fitted model to predict the last 5 years of the data.
+%% 6. Fit the ARIMA model to the first 10 years of rainfall notifications, then 
+% use the fitted model to predict the last 2.5 years of the data.
 
 R1 = lograinfall(1:560);
 fit1r = estimate(model,R1);
@@ -174,8 +174,11 @@ plot(datenum(date_rainwk),resid_rainarima,'b')
 plot(datenum(date_nepal),resid_arima,'r')
 datetick('x','mmm-yy')
 xlim([datenum(date_nepal(1,:))-7 datenum(date_nepal(end,:))+7])
+legend('Rainfall','Typhoid')
+title('Residuals over Time')
 subplot(1,2,2)
 scatter(resid_rainarima,resid_arima(1:716),'ok')
+title('Rainfall ARIMA Residuals vs Typhoid ARIMA Residuals')
 
 corr_arimaresid=zeros(9,1);
 
