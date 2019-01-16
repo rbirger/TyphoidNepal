@@ -53,9 +53,9 @@ lograinfall=log(rainfall_nepalwk+1);
 logparatyphi = log(paratyphi_nepal+1);
 
 %toggle to choose between log rainfall or normalized log typhi/paratyphi
-tsdata= (logparatyphi - mean(logparatyphi))/std(logparatyphi);
+%tsdata= (logparatyphi - mean(logparatyphi))/std(logparatyphi);
 %tsdata=(logtyphi - mean(logtyphi))/std(logtyphi); 
-%tsdata=lograinfall; % +1; %
+tsdata=lograinfall; % +1; %
 
 n = length(tsdata);  % number of time points
 dt = 1/52;   % frequency of observations

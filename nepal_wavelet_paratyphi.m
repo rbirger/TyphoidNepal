@@ -1,35 +1,5 @@
-%% Data on the serovar (typhi vs paratyphi) is missing for June 2001-May 2002, so let's impute it based on the proportion typhi vs paratyphi using the rest of the data
-dbstop if error
-typhi_nepal=C_nepal(:,3);
-paratyphi_nepal=C_nepal(:,2);
-
-nepal_ptyphi=sum(C_nepal([1:216 264:end],3))/sum(C_nepal([1:216 264:end],1));
-nepal_pparatyphi=sum(C_nepal([1:216 264:end],2))/sum(C_nepal([1:216 264:end],1));
-
-for i=217:263
-    typhi_nepal(i,1)=poissrnd(nepal_ptyphi*C_nepal(i,1));
-    paratyphi_nepal(i,1)=C_nepal(i,1)-typhi_nepal(i,1);
-end
-
-
 %% Fourier analysis
-%Typhoid
-tmax=length(typhi_nepal); %length of the time series
-dt=1/52; %time step (in years)
 
-ym=abs(fft(typhi_nepal)); %absolute value of the fast Fourier transform for the time series 
-
-f=(0:tmax-1)/tmax; %frequency of oscillations (in bi-weeks)
-T=dt./f; %period of oscillations (in years) = 1/frequency
-
-figure
-bar(T(2:round(tmax/2)+1),ym(2:round(tmax/2)+1,:),'EdgeColor','k')
-xlim([0 10])
-xlabel('Period (years)','FontSize',12)
-ylabel('Strength','FontSize',12)
-title('Fourier Analysis of Dominant Periods: Typhoid')
-
-%Paratyphoid
 tmax=length(paratyphi_nepal); %length of the time series
 dt=1/52; %time step (in years)
 
@@ -43,19 +13,14 @@ bar(T(2:round(tmax/2)+1),ym(2:round(tmax/2)+1,:),'EdgeColor','k')
 xlim([0 10])
 xlabel('Period (years)','FontSize',12)
 ylabel('Strength','FontSize',12)
-title('Fourier Analysis of Dominant Periods: Parayphoid')
 
 %% Wavelet analysis  
 
 % First, log-transform the data and scale it to have a mean=0 and variance=1 
-logtyphi=log(typhi_nepal+1); 
+logtyphi=log(paratyphi_nepal+1); 
 lograinfall=log(rainfall_nepalwk+1);
-logparatyphi = log(paratyphi_nepal+1);
 
-%toggle to choose between log rainfall or normalized log typhi/paratyphi
-tsdata= (logparatyphi - mean(logparatyphi))/std(logparatyphi);
-%tsdata=(logtyphi - mean(logtyphi))/std(logtyphi); 
-%tsdata=lograinfall; % +1; %
+tsdata=(logtyphi - mean(logtyphi))/std(logtyphi); %lograinfall; %
 
 n = length(tsdata);  % number of time points
 dt = 1/52;   % frequency of observations
