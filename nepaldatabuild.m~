@@ -8,10 +8,11 @@ nepal_pparatyphi=sum(C_nepal([1:216 264:end],2))/sum(C_nepal([1:216 264:end],1))
 
 for i=217:263
     typhi_nepal(i,1)=poissrnd(nepal_ptyphi*C_nepal(i,1));
-    paratyphi_nepal(i,1)=C_nepal(i,1)-typhi_nepal(i,1);
+    paratyphi_nepal(i,1)=max(C_nepal(i,1)-typhi_nepal(i,1),0);
 end
 
-% First, log-transform the data and scale it to have a mean=0 and variance=1 
+% First, log-transform the data (try also --and scale it to have a mean=0
+% and variance=1)
 logtyphi=log(typhi_nepal+1); 
 lograinfall=log(rainfall_nepalwk+1);
 
@@ -93,7 +94,7 @@ corr_rainresid=zeros(9,1);
 
 for i=0:8
     corr_rainresid(i+1,1)=corr(rainfall_nepalwk,resid_typhi(1+i:length(rainfall_nepalwk)+i,1));
-    %(i+1,2)=corr(rainfall_nepalwk,paratyphi_nepal(1+i:length(rainfall_nepalwk)+i,1));
+    %corr_rainresid(i+1,2)=corr(rainfall_nepalwk,resid_paratyphi_nepal(1+i:length(rainfall_nepalwk)+i,1));
 end
 
 %% Fit harmonic regression to rainfall data 
@@ -127,15 +128,19 @@ end
 Y_rainfall6=predict(mdl_rainfall6);
 resid_rainfall=rainfall_nepalwk./Y_rainfall6;
 
+% define lag index vector
+lag_ind= [1:716];
+date_num_nepal = datenum(date_nepal);
 figure; 
 subplot(1,2,1); hold on;
 plot(datenum(date_rainwk),resid_rainfall,'b')
-plot(datenum(date_nepal),resid_typhi,'r')
+%plot(datenum(date_nepal),resid_typhi,'r')
+plot(date_num_nepal(lag_ind),resid_typhi(lag_ind),'r')
 legend('Rainfall Residuals','Typhi Residuals')
 datetick('x','mmm-yy')
-xlim([datenum(date_nepal(1,:))-7 datenum(date_nepal(end,:))+7])
+xlim([datenum(date_nepal(lag_ind(1),:))-7 datenum(date_nepal(lag_ind(end),:))+7])
 subplot(1,2,2)
-scatter(resid_rainfall,resid_typhi(1:716))
+scatter(resid_rainfall,resid_typhi(lag_ind)) %change back to 1:716 for no lag
 title('Rainfall vs Typhi Residuals')
 
 %%
@@ -201,24 +206,137 @@ logparatyphi = log(paratyphi_nepal+1);
 
 time=(15:length(date_nepal)+14)'; % data starts April 13 = week 15
 
-mdl_ptyphi1=GeneralizedLinearModel.fit([time cos(2*pi*time/52.18) sin(2*pi*time/52.18)],logparatyphi,'linear','Distribution','poisson','Link','log');
-mdl_ptyphi2=GeneralizedLinearModel.fit([time cos(2*pi*time/52.18) sin(2*pi*time/52.18) cos(2*pi*time/26.09) sin(2*pi*time/26.09)],logparatyphi,'linear','Distribution','poisson','Link','log');
+mdl_paratyphi1=GeneralizedLinearModel.fit([time cos(2*pi*time/52.18) sin(2*pi*time/52.18)],logparatyphi,'linear','Distribution','poisson','Link','log');
+mdl_paratyphi2=GeneralizedLinearModel.fit([time cos(2*pi*time/52.18) sin(2*pi*time/52.18) cos(2*pi*time/26.09) sin(2*pi*time/26.09)],logparatyphi,'linear','Distribution','poisson','Link','log');
 %mdl_typhi3=GeneralizedLinearModel.fit([time cos(2*pi*time/52.18) sin(2*pi*time/52.18) cos(2*pi*time/26.09) sin(2*pi*time/26.09) cos(2*pi*time/13) sin(2*pi*time/13)],typhi_nepal,'linear','Distribution','poisson','Link','log');
 %mdl_typhi4=GeneralizedLinearModel.fit([time cos(2*pi*time/156.5) sin(2*pi*time/156.5) cos(2*pi*time/52.18) sin(2*pi*time/52.18) cos(2*pi*time/26.09) sin(2*pi*time/26.09) cos(2*pi*time/13) sin(2*pi*time/13)],typhi_nepal,'linear','Distribution','poisson','Link','log');
 %mdl_typhi5=GeneralizedLinearModel.fit([time cos(2*pi*time/156.5) sin(2*pi*time/156.5) cos(2*pi*time/52.18) sin(2*pi*time/52.18) cos(2*pi*time/26.09) sin(2*pi*time/26.09)],typhi_nepal,'linear','Distribution','poisson','Link','log');
 %mdl_typhi6=GeneralizedLinearModel.fit([time cos(2*pi*time/521.8) sin(2*pi*time/521.8) cos(2*pi*time/156.5) sin(2*pi*time/156.5) cos(2*pi*time/52.18) sin(2*pi*time/52.18) cos(2*pi*time/26.09) sin(2*pi*time/26.09)],typhi_nepal,'linear','Distribution','poisson','Link','log');
-mdl_typhi7=GeneralizedLinearModel.fit([time cos(2*pi*time/626.1) sin(2*pi*time/626.1) cos(2*pi*time/156.5) sin(2*pi*time/156.5) cos(2*pi*time/52.18) sin(2*pi*time/52.18) cos(2*pi*time/26.09) sin(2*pi*time/26.09)],logparatyphi,'linear','Distribution','poisson','Link','log');
+mdl_paratyphi7=GeneralizedLinearModel.fit([time cos(2*pi*time/626.1) sin(2*pi*time/626.1) cos(2*pi*time/156.5) sin(2*pi*time/156.5) cos(2*pi*time/52.18) sin(2*pi*time/52.18) cos(2*pi*time/26.09) sin(2*pi*time/26.09)],logparatyphi,'linear','Distribution','poisson','Link','log');
 %mdl_typhi8=GeneralizedLinearModel.fit([time cos(2*pi*time/(52.18*14)) sin(2*pi*time/(52.18*14)) cos(2*pi*time/156.5) sin(2*pi*time/156.5) cos(2*pi*time/52.18) sin(2*pi*time/52.18) cos(2*pi*time/26.09) sin(2*pi*time/26.09)],typhi_nepal,'linear','Distribution','poisson','Link','log');
 
-mdl_typhi3=GeneralizedLinearModel.fit([time cos(2*pi*time/156.5) sin(2*pi*time/156.5) cos(2*pi*time/52.18) sin(2*pi*time/52.18)],logparatyphi,'linear','Distribution','poisson','Link','log');
-mdl_typhi4=GeneralizedLinearModel.fit([time cos(2*pi*time/626.1) sin(2*pi*time/626.1) cos(2*pi*time/52.18) sin(2*pi*time/52.18)],logparatyphi,'linear','Distribution','poisson','Link','log');
-mdl_typhi5=GeneralizedLinearModel.fit([time cos(2*pi*time/626.1) sin(2*pi*time/626.1) cos(2*pi*time/156.5) sin(2*pi*time/156.5) cos(2*pi*time/52.18) sin(2*pi*time/52.18)],logparatyphi,'linear','Distribution','poisson','Link','log');
+mdl_paratyphi3=GeneralizedLinearModel.fit([time cos(2*pi*time/156.5) sin(2*pi*time/156.5) cos(2*pi*time/52.18) sin(2*pi*time/52.18)],logparatyphi,'linear','Distribution','poisson','Link','log');
+mdl_paratyphi4=GeneralizedLinearModel.fit([time cos(2*pi*time/626.1) sin(2*pi*time/626.1) cos(2*pi*time/52.18) sin(2*pi*time/52.18)],logparatyphi,'linear','Distribution','poisson','Link','log');
+mdl_paratyphi5=GeneralizedLinearModel.fit([time cos(2*pi*time/626.1) sin(2*pi*time/626.1) cos(2*pi*time/156.5) sin(2*pi*time/156.5) cos(2*pi*time/52.18) sin(2*pi*time/52.18)],logparatyphi,'linear','Distribution','poisson','Link','log');
 
 %% display AICs
 AICs_paratyphoid = [];
 for i = [1:5,7]
-   eval(['tmpMdl = mdl_typhi',num2str(i),';'])
+   eval(['tmpMdl = mdl_paratyphi',num2str(i),';'])
    %disp(i);
    %disp(tmpMdl.ModelCriterion.AIC);
    AICs_paratyphoid = [AICs_paratyphoid;tmpMdl.ModelCriterion.AIC];
 end
+
+%%
+%model 4 has lowest AIC again
+%Y_typhi6=predict(mdl_typhi6);
+%Y_typhi7=predict(mdl_typhi7);
+%Y_typhi8=predict(mdl_typhi8);
+Y_paratyphi4=max(0,exp(predict(mdl_paratyphi4))-1);
+
+figure; hold on
+plot(datenum(date_nepal),paratyphi_nepal,'b')
+plot(datenum(date_nepal),Y_paratyphi4,'r')
+%plot(datenum(date_nepal),Y_typhi6,'r')
+%plot(datenum(date_nepal),Y_typhi7,'g')
+%plot(datenum(date_nepal),Y_typhi8,'c')
+datetick('x','mmm-yy')
+xlim([datenum(date_nepal(1,:))-7 datenum(date_nepal(end,:))+7])
+set(gca,'YLim',[0 80],'YTick',0:20:80)
+ylabel({'No. of Paratyphi cases';'(per week)'})
+legend('Paratyphoid Cases','Model Fit 4 (12, 1 year periods)'); %,'Model Fit 7 (12,3,1, .5 yr periods)')
+
+%%
+%best model is 4 again, take residuals and plot vs rainfall
+
+resid_paratyphi=paratyphi_nepal./Y_paratyphi4;
+
+figure
+[ax,y1,y2]=plotyy(datenum(date_nepal),resid_paratyphi,datenum(date_rainwk),rainfall_nepalwk);
+datetick('x','mmm-yy')
+set(y1,'Color','r')
+set(y2,'Color','b')
+set(ax(1),'YColor','k','XLim',[datenum(date_nepal(1,:))-7 datenum(date_nepal(end,:))+7],'YTick',0:2:10)
+set(ax(2),'YColor','k','XLim',[datenum(date_nepal(1,:))-7 datenum(date_nepal(end,:))+7],'XTick',[],'YTick',0:100:500)
+ylabel('Paratyphoid Residuals (per week)')
+set(get(ax(2),'YLabel'),'String','Rainfall (mm/wk)')
+legend('Paratyphoid Residuals','Rainfall')
+
+%% compare residuals
+
+% define lag index vector
+lag_ind= [1:716];
+date_num_nepal = datenum(date_nepal);
+figure; 
+subplot(1,2,1); hold on;
+plot(datenum(date_rainwk),resid_rainfall,'b')
+%plot(datenum(date_nepal),resid_paratyphi,'r')
+plot(date_num_nepal(lag_ind),resid_paratyphi(lag_ind),'r')
+legend('Rainfall Residuals','Paratyphi Residuals')
+datetick('x','mmm-yy')
+xlim([datenum(date_nepal(lag_ind(1),:))-7 datenum(date_nepal(lag_ind(end),:))+7])
+subplot(1,2,2)
+scatter(resid_rainfall,resid_paratyphi(lag_ind))
+title('Rainfall vs Paratyphi Residuals')
+
+%% Calculate correlation between rainfall and typhi/paratyphi cases and different lags (0-8 weeks)
+
+corr_rainTPresid=zeros(9,1);
+corr_rainALLresid=zeros(9,1);
+
+for i=0:8
+    corr_rainTPresid(i+1,1)=corr(rainfall_nepalwk,resid_typhi(1+i:length(rainfall_nepalwk)+i,1));
+    corr_rainTPresid(i+1,2)=corr(rainfall_nepalwk,resid_paratyphi(1+i:length(rainfall_nepalwk)+i,1));
+    corr_rainALLresid(i+1,1)=corr(resid_rainfall,resid_typhi(1+i:length(rainfall_nepalwk)+i,1));
+    corr_rainALLresid(i+1,2)=corr(resid_rainfall,resid_paratyphi(1+i:length(rainfall_nepalwk)+i,1));
+
+end
+
+%% compare residuals-- not with rainfall, just to test
+
+figure; 
+subplot(1,2,1); hold on;
+plot(datenum(date_nepal),resid_typhi,'b')
+plot(datenum(date_nepal),resid_paratyphi,'r')
+legend('Typhoid Residuals','Parayphi Residuals')
+datetick('x','mmm-yy')
+xlim([datenum(date_nepal(1,:))-7 datenum(date_nepal(end,:))+7])
+subplot(1,2,2)
+scatter(resid_typhi,resid_paratyphi)
+title('Typhoid vs Parayphi Residuals')
+
+%% Lag Analysis Figures
+
+
+
+Y_rainfall6=predict(mdl_rainfall6);
+resid_rainfall=rainfall_nepalwk./Y_rainfall6;
+
+% define lag index vector
+lag_ind= [1:716];
+date_num_nepal = datenum(date_nepal);
+figure; 
+subplot(1,2,1); hold on;
+plot(datenum(date_rainwk),resid_rainfall,'b')
+%plot(datenum(date_nepal),resid_typhi,'r')
+plot(date_num_nepal(lag_ind),resid_typhi(lag_ind),'r')
+legend('Rainfall Residuals','Typhi Residuals')
+datetick('x','mmm-yy')
+xlim([datenum(date_nepal(lag_ind(1),:))-7 datenum(date_nepal(lag_ind(end),:))+7])
+subplot(1,2,2)
+scatter(resid_rainfall,resid_typhi(lag_ind)) %change back to 1:716 for no lag
+title('Rainfall vs Typhi Residuals')
+
+
+figure; 
+subplot(1,2,1); hold on;
+plot(datenum(date_rainwk),resid_rainfall,'b')
+%plot(datenum(date_nepal),resid_paratyphi,'r')
+plot(date_num_nepal(lag_ind),resid_paratyphi(lag_ind),'r')
+legend('Rainfall Residuals','Paratyphi Residuals')
+datetick('x','mmm-yy')
+xlim([datenum(date_nepal(lag_ind(1),:))-7 datenum(date_nepal(lag_ind(end),:))+7])
+subplot(1,2,2)
+scatter(resid_rainfall,resid_paratyphi(lag_ind))
+title('Rainfall vs Paratyphi Residuals')

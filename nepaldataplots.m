@@ -116,3 +116,16 @@ set(ax(2),'YColor','k','XLim',[0 53],'XTick',0:13:52)
 ylabel('Avg typhoid cases (per week)')
 set(get(ax(2),'YLabel'),'String','Avg rainfall (mm/wk)')
 legend('Typhoid cases','Rainfall')
+
+
+%%
+figure
+%[ax,y1,y2]=plotyy(1:52,mean(typhi_nepal_bywk,2),1:52,rainbywk_nepal);
+[ax,y1,y2]=plotyy(1:52,typhi_wkyr,1:52,rainbywk_nepal);
+set(y1,'Color','r')
+set(y2,'Color','b')
+set(ax(1),'YColor','k','XLim',[0 53],'XTick',0:13:52)
+set(ax(2),'YColor','k','XLim',[0 53],'XTick',0:13:52)
+ylabel('Avg typhoid cases (per week)')
+set(get(ax(2),'YLabel'),'String','Avg rainfall (mm/wk)')
+legend('Typhoid cases','Rainfall')

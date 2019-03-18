@@ -11,7 +11,8 @@ for i=217:263
     paratyphi_nepal(i,1)=max(C_nepal(i,1)-typhi_nepal(i,1),0);
 end
 
-% First, log-transform the data and scale it to have a mean=0 and variance=1 
+% First, log-transform the data (try also --and scale it to have a mean=0
+% and variance=1)
 logtyphi=log(typhi_nepal+1); 
 lograinfall=log(rainfall_nepalwk+1);
 
@@ -93,7 +94,7 @@ corr_rainresid=zeros(9,1);
 
 for i=0:8
     corr_rainresid(i+1,1)=corr(rainfall_nepalwk,resid_typhi(1+i:length(rainfall_nepalwk)+i,1));
-    %(i+1,2)=corr(rainfall_nepalwk,paratyphi_nepal(1+i:length(rainfall_nepalwk)+i,1));
+    %corr_rainresid(i+1,2)=corr(rainfall_nepalwk,resid_paratyphi_nepal(1+i:length(rainfall_nepalwk)+i,1));
 end
 
 %% Fit harmonic regression to rainfall data 
@@ -127,15 +128,19 @@ end
 Y_rainfall6=predict(mdl_rainfall6);
 resid_rainfall=rainfall_nepalwk./Y_rainfall6;
 
+% define lag index vector
+lag_ind= [1:716];
+date_num_nepal = datenum(date_nepal);
 figure; 
 subplot(1,2,1); hold on;
 plot(datenum(date_rainwk),resid_rainfall,'b')
-plot(datenum(date_nepal),resid_typhi,'r')
+%plot(datenum(date_nepal),resid_typhi,'r')
+plot(date_num_nepal(lag_ind),resid_typhi(lag_ind),'r')
 legend('Rainfall Residuals','Typhi Residuals')
 datetick('x','mmm-yy')
-xlim([datenum(date_nepal(1,:))-7 datenum(date_nepal(end,:))+7])
+xlim([datenum(date_nepal(lag_ind(1),:))-7 datenum(date_nepal(lag_ind(end),:))+7])
 subplot(1,2,2)
-scatter(resid_rainfall,resid_typhi(1:716))
+scatter(resid_rainfall,resid_typhi(lag_ind)) %change back to 1:716 for no lag
 title('Rainfall vs Typhi Residuals')
 
 %%
@@ -260,16 +265,33 @@ legend('Paratyphoid Residuals','Rainfall')
 
 %% compare residuals
 
+% define lag index vector
+lag_ind= [1:716];
+date_num_nepal = datenum(date_nepal);
 figure; 
 subplot(1,2,1); hold on;
 plot(datenum(date_rainwk),resid_rainfall,'b')
-plot(datenum(date_nepal),resid_paratyphi,'r')
-legend('Rainfall Residuals','Parayphi Residuals')
+%plot(datenum(date_nepal),resid_paratyphi,'r')
+plot(date_num_nepal(lag_ind),resid_paratyphi(lag_ind),'r')
+legend('Rainfall Residuals','Paratyphi Residuals')
 datetick('x','mmm-yy')
-xlim([datenum(date_nepal(1,:))-7 datenum(date_nepal(end,:))+7])
+xlim([datenum(date_nepal(lag_ind(1),:))-7 datenum(date_nepal(lag_ind(end),:))+7])
 subplot(1,2,2)
-scatter(resid_rainfall,resid_paratyphi(1:716))
-title('Rainfall vs Parayphi Residuals')
+scatter(resid_rainfall,resid_paratyphi(lag_ind))
+title('Rainfall vs Paratyphi Residuals')
+
+%% Calculate correlation between rainfall and typhi/paratyphi cases and different lags (0-8 weeks)
+
+corr_rainTPresid=zeros(9,1);
+corr_rainALLresid=zeros(9,1);
+
+for i=0:8
+    corr_rainTPresid(i+1,1)=corr(rainfall_nepalwk,resid_typhi(1+i:length(rainfall_nepalwk)+i,1));
+    corr_rainTPresid(i+1,2)=corr(rainfall_nepalwk,resid_paratyphi(1+i:length(rainfall_nepalwk)+i,1));
+    corr_rainALLresid(i+1,1)=corr(resid_rainfall,resid_typhi(1+i:length(rainfall_nepalwk)+i,1));
+    corr_rainALLresid(i+1,2)=corr(resid_rainfall,resid_paratyphi(1+i:length(rainfall_nepalwk)+i,1));
+
+end
 
 %% compare residuals-- not with rainfall, just to test
 
@@ -283,3 +305,37 @@ xlim([datenum(date_nepal(1,:))-7 datenum(date_nepal(end,:))+7])
 subplot(1,2,2)
 scatter(resid_typhi,resid_paratyphi)
 title('Typhoid vs Parayphi Residuals')
+
+%% Lag Analysis Figures
+Y_rainfall6=predict(mdl_rainfall6);
+    resid_rainfall=rainfall_nepalwk./Y_rainfall6;
+    
+for i = 0:8
+    % define lag index vector
+    lag_ind= [1+i:716+i];
+    date_num_nepal = datenum(date_nepal);
+    figure; 
+    subplot(1,2,1); hold on;
+    plot(datenum(date_rainwk),resid_rainfall,'b')
+    %plot(datenum(date_nepal),resid_typhi,'r')
+    plot(date_num_nepal(lag_ind),resid_typhi(lag_ind),'r')
+    legend('Rainfall Residuals','Typhi Residuals')
+    datetick('x','mmm-yy')
+    xlim([datenum(date_nepal(lag_ind(1),:))-7 datenum(date_nepal(lag_ind(end),:))+7])
+    subplot(1,2,2)
+    scatter(resid_rainfall,resid_typhi(lag_ind)) %change back to 1:716 for no lag
+    title(['Rainfall vs Typhi Residuals, ',num2str(i),' week lag'])
+
+
+    figure; 
+    subplot(1,2,1); hold on;
+    plot(datenum(date_rainwk),resid_rainfall,'b')
+    %plot(datenum(date_nepal),resid_paratyphi,'r')
+    plot(date_num_nepal(lag_ind),resid_paratyphi(lag_ind),'r')
+    legend('Rainfall Residuals','Paratyphi Residuals')
+    datetick('x','mmm-yy')
+    xlim([datenum(date_nepal(lag_ind(1),:))-7 datenum(date_nepal(lag_ind(end),:))+7])
+    subplot(1,2,2)
+    scatter(resid_rainfall,resid_paratyphi(lag_ind))
+    title(['Rainfall vs Paratyphi Residuals, ',num2str(i),' week lag'] )
+end

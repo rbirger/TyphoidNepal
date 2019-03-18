@@ -8,7 +8,7 @@ nepal_pparatyphi=sum(C_nepal([1:216 264:end],2))/sum(C_nepal([1:216 264:end],1))
 
 for i=217:263
     typhi_nepal(i,1)=poissrnd(nepal_ptyphi*C_nepal(i,1));
-    paratyphi_nepal(i,1)=C_nepal(i,1)-typhi_nepal(i,1);
+    paratyphi_nepal(i,1)=max(C_nepal(i,1)-typhi_nepal(i,1),0);
 end
 
 
@@ -24,7 +24,7 @@ T=dt./f; %period of oscillations (in years) = 1/frequency
 
 figure
 bar(T(2:round(tmax/2)+1),ym(2:round(tmax/2)+1,:),'EdgeColor','k')
-xlim([0 10])
+xlim([0 15])
 xlabel('Period (years)','FontSize',12)
 ylabel('Strength','FontSize',12)
 title('Fourier Analysis of Dominant Periods: Typhoid')
@@ -40,7 +40,7 @@ T=dt./f; %period of oscillations (in years) = 1/frequency
 
 figure
 bar(T(2:round(tmax/2)+1),ym(2:round(tmax/2)+1,:),'EdgeColor','k')
-xlim([0 10])
+xlim([0 15])
 xlabel('Period (years)','FontSize',12)
 ylabel('Strength','FontSize',12)
 title('Fourier Analysis of Dominant Periods: Parayphoid')
@@ -54,6 +54,8 @@ logparatyphi = log(paratyphi_nepal+1);
 
 %toggle to choose between log rainfall or normalized log typhi/paratyphi
 tsdata= (logparatyphi - mean(logparatyphi))/std(logparatyphi);
+%tsdata = logparatyphi;
+%tsdata = logtyphi;
 %tsdata=(logtyphi - mean(logtyphi))/std(logtyphi); 
 %tsdata=lograinfall; % +1; %
 
